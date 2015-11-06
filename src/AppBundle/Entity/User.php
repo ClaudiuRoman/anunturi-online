@@ -24,4 +24,43 @@ class User extends BaseUser
         parent::__construct();
         // your own logic
     }
+    /**
+     * @ORM\OneToMany(targetEntity="Anunt", mappedBy="user")
+     */
+    protected $ads;
+
+
+    /**
+     * Add ad
+     *
+     * @param \AppBundle\Entity\Anunt $ad
+     *
+     * @return User
+     */
+    public function addAd(\AppBundle\Entity\Anunt $ad)
+    {
+        $this->ads[] = $ad;
+
+        return $this;
+    }
+
+    /**
+     * Remove ad
+     *
+     * @param \AppBundle\Entity\Anunt $ad
+     */
+    public function removeAd(\AppBundle\Entity\Anunt $ad)
+    {
+        $this->ads->removeElement($ad);
+    }
+
+    /**
+     * Get ads
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAds()
+    {
+        return $this->ads;
+    }
 }
