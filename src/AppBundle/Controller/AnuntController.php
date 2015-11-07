@@ -71,4 +71,27 @@ class AnuntController extends Controller{
 
         return $this->render('AppBundle:Anunt:editAd.html.twig', $build);
     }
+
+    /**
+     * @Route("/deletead/{id}", name="")
+     */
+    public function deleteAdAction($id, Request $request) {
+
+        $em = $this->getDoctrine()->getManager();
+        $ad = $em->getRepository('AppBundle:Anunt')->find($id);
+        if (!$ad) {
+            throw $this->createNotFoundException(
+                'No ad found for id ' . $id
+            );
+        }
+        $currentUser=$this->getUser();
+        if($ad->getUser()!=$currentUser){
+            throw $this->createNotFoundException(
+                'You don\'t have rights to delete this ad! ');
+        }
+
+        $em->remove($ad);
+        $em->flush();
+        return new Response('Ad deleted successfully');
+    }
 }
