@@ -15,6 +15,9 @@ class AnuntController extends Controller{
      * @Template()
      */
     public function newAdAction(Request $request){
+        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            throw $this->createAccessDeniedException();
+        }
 
         $form=$this->createForm(new AnuntType());
 
@@ -35,8 +38,37 @@ class AnuntController extends Controller{
         return [
             'form'=>$form->createView()
         ];
-//        return $this->render('@App/Default/newad.html.twig',
-//            array('form'=>$form)
-//        );
+    }
+
+    /**
+     * @Route("/editad/{id}", name="")
+     * @Template()
+     */
+    public function editAdAction($id, Request $request) {
+
+        $em = $this->getDoctrine()->getManager();
+        $ad = $em->getRepository('AppBundle:Anunt')->find($id);
+        if (!$ad) {
+            throw $this->createNotFoundException(
+                'No ad found for id ' . $id
+            );
+        }
+        $currentUser=$this->getUser();
+        if($ad->getUser()!=$currentUser){
+            throw $this->createNotFoundException(
+                'You don\'t have rights to edit this ad! ');
+        }
+
+        $form = $this->createForm(new AnuntType(),$ad);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em->flush();
+            return new Response('Ad updated successfully');
+        }
+
+        $build['form'] = $form->createView();
+
+        return $this->render('AppBundle:Anunt:editAd.html.twig', $build);
     }
 }
