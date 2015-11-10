@@ -245,4 +245,6 @@ class Anunt
     {
         return $this->user;
     }
+
+
 }

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h3>Anunturi:</h3>
+    <br>
+    {% for ad in ads %}
+        {{ ad.title }}
+        -
+        {{ ad.price }}
+        -
+        {{ ad.CreatedAt|date('Y-m-d H:i') }}
+        <br>
+    {% endfor %}
+    <div class="navigation">
+        {{ knp_pagination_render(ads) }}
+    </div>
+{% endblock %}
