@@ -94,4 +94,23 @@ class AnuntController extends Controller{
         $em->flush();
         return new Response('Ad deleted successfully');
     }
+
+    /**
+     * @Route("/viewad/{id}",name="view_ad")
+     * @Template
+     */
+    public function viewAdAction($id,Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $ad = $em->getRepository('AppBundle:Anunt')->find($id);
+        if (!$ad) {
+            throw $this->createNotFoundException(
+                'No ad found for id ' . $id
+            );
+        }
+
+        return $this->render('@App/Anunt/viewAd.html.twig',array(
+            'ad'=>$ad)
+        );
+    }
 }

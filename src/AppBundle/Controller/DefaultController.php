@@ -24,6 +24,7 @@ class DefaultController extends Controller
             $request->query->getInt('page', 1),
             10/*limit per page*/
         );
+
         return [
             'ads'=>$ads
         ];

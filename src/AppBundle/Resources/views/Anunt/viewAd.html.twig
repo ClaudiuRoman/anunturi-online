@@ -1,0 +1,14 @@
+{# app/Resources/views/viewad.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ ad.title }}
+    <br>
+    {{ ad.price }}
+    <br>
+    {{ ad.description }}
+    <br>
+    {{ ad.createdat|date('Y-m-d H:i') }}
+    <br>
+    {{ ad.user }}
+{% endblock %}
