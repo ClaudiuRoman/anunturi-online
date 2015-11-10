@@ -16,7 +16,7 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $manager=$this->getDoctrine()->getManager();
-        $query=$manager->getRepository('AppBundle:Anunt')->findAll();
+        $query=$manager->getRepository('AppBundle:Anunt')->findBy([],['createdAt'=>'DESC']);
 
         $paginator  = $this->get('knp_paginator');
         $ads = $paginator->paginate(
