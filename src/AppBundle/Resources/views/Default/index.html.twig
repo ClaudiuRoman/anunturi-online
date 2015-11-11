@@ -8,9 +8,15 @@
     <div>
         <form action="" method="GET">
             <input type="text" name="search"/>
-            <button type="submit">Cauta</button>
+            <select name="sort_type">
+                <option value="default">Default</option>
+                <option value="price-asc">Price ASC</option>
+                <option value="price-desc">Price DESC</option>
+           </select>
+            <button type="submit">Filter</button>
         </form>
     </div>
+
     {% for ad in ads %}
         <a href="{{ path('view_ad', {'id': ad.id}) }}">{{ ad.title }}</a>
         -

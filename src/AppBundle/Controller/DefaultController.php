@@ -17,7 +17,9 @@ class DefaultController extends Controller
     {
         $repository=$this->getDoctrine()->getRepository('AppBundle:Anunt');
 
-        $results = $repository->findAnunturi($request->get('search'));
+//        var_dump($request->get('sort_type'));
+//        die();
+        $results = $repository->findAnunturi($request->get('search'),$request->get('sort_type'));
 
         $paginator  = $this->get('knp_paginator');
         $ads = $paginator->paginate(
