@@ -1,0 +1,3 @@
+homepage_new:
+  path: /
+  defaults: {_controller: 'AppBundle:Anunt:index'}

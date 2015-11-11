@@ -8,7 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
  * Anunt
  *
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\AnuntRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Anunt
 {
@@ -47,7 +48,7 @@ class Anunt
      *
      * @ORM\Column(name="isPublished", type="boolean")
      */
-    private $isPublished;
+    private $isPublished = true;
 
     /**
      * @var \DateTime
@@ -56,6 +57,10 @@ class Anunt
      */
     private $createdAt;
 
+    public function __construct(User $user = null)
+    {
+        $this->user = $user;
+    }
 
     /**
      * Get id
@@ -65,6 +70,14 @@ class Anunt
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function updateCreatedAt()
+    {
+        $this->createdAt = new \DateTime();
     }
 
     /**

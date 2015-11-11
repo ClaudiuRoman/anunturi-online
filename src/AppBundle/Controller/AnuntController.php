@@ -9,97 +9,62 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class AnuntController extends Controller{
+/**
+ * Class AnuntController
+ * @package AppBundle\Controller
+ * @Route("/anunturi")
+ */
+class AnuntController extends Controller
+{
     /**
-     * @Route("/newad/", name="new-ad")
-     * @Template()
+     * @Route("/", name="homepage")
+     * @Template
      */
-    public function newAdAction(Request $request){
-        if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            throw $this->createAccessDeniedException();
-        }
+    public function indexAction(Request $request)
+    {
+        $repository=$this->getDoctrine()->getRepository('AppBundle:Anunt');
 
-        $form=$this->createForm(new AnuntType());
+        $repository->findAnunturi($request->get('search'));
 
-        if ($form->handleRequest($request) && $form->isValid()) {
-            $ad=$form->getData();
-            $ad->setIsPublished(TRUE);
-            $ad->setCreatedAt(new \DateTime('now'));
-            $user=$this->getUser();
-            $ad->setUser($user);
-//            var_dump($ad);
-//            die();
-            $manager=$this->getDoctrine()->getManager();
-            $manager->persist($ad);
-            $manager->flush();
-            return $this->redirectToRoute('homepage');
-        }
+        $paginator  = $this->get('knp_paginator');
+        $ads = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10/*limit per page*/
+        );
 
         return [
-            'form'=>$form->createView()
+            'ads'=>$ads
         ];
     }
 
     /**
-     * @Route("/editad/{id}", name="")
+     * @Route("/new", name="new-ad")
      * @Template()
      */
-    public function editAdAction($id, Request $request) {
+    public function newAdAction(Request $request)
+    {
+        $anunt = new Anunt($this->getUser());
+        $form = $this->createForm(new AnuntType(), $anunt);
 
-        $em = $this->getDoctrine()->getManager();
-        $ad = $em->getRepository('AppBundle:Anunt')->find($id);
-        if (!$ad) {
-            throw $this->createNotFoundException(
-                'No ad found for id ' . $id
-            );
-        }
-        $currentUser=$this->getUser();
-        if($ad->getUser()!=$currentUser){
-            throw $this->createNotFoundException(
-                'You don\'t have rights to edit this ad! ');
+        if ($form->handleRequest($request) && $form->isValid()) {
+            $manager = $this->getDoctrine()->getManager();
+            $manager->persist($anunt);
+            $manager->flush();
+
+            return $this->redirectToRoute('homepage');
         }
 
-        $form = $this->createForm(new AnuntType(),$ad);
-        $form->handleRequest($request);
-
-        if ($form->isValid()) {
-            $em->flush();
-            return new Response('Ad updated successfully');
-        }
-
-        $build['form'] = $form->createView();
-
-        return $this->render('AppBundle:Anunt:editAd.html.twig', $build);
+        return [
+            'form' => $form->createView()
+        ];
     }
 
     /**
-     * @Route("/deletead/{id}", name="")
+     * @Route("/edit/{id}", name="edit_article")
+     * @Template()
      */
-    public function deleteAdAction($id, Request $request) {
-
-        $em = $this->getDoctrine()->getManager();
-        $ad = $em->getRepository('AppBundle:Anunt')->find($id);
-        if (!$ad) {
-            throw $this->createNotFoundException(
-                'No ad found for id ' . $id
-            );
-        }
-        $currentUser=$this->getUser();
-        if($ad->getUser()!=$currentUser){
-            throw $this->createNotFoundException(
-                'You don\'t have rights to delete this ad! ');
-        }
-
-        $em->remove($ad);
-        $em->flush();
-        return new Response('Ad deleted successfully');
-    }
-
-    /**
-     * @Route("/viewad/{id}",name="view_ad")
-     * @Template
-     */
-    public function viewAdAction($id,Request $request)
+    public function editAdAction($id, Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $ad = $em->getRepository('AppBundle:Anunt')->find($id);
@@ -109,8 +74,64 @@ class AnuntController extends Controller{
             );
         }
 
-        return $this->render('@App/Anunt/viewAd.html.twig',array(
-            'ad'=>$ad)
+        if ($ad->getUser() != $this->getUser()) {
+            throw $this->createNotFoundException('You don\'t have rights to edit this ad! ');
+        }
+
+        $form = $this->createForm(new AnuntType(), $ad);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em->flush();
+
+            return $this->redirectToRoute('homepage');
+        }
+
+        return $this->render('AppBundle:Anunt:editAd.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/delete/{id}", name="delete_anunt")
+     */
+    public function deleteAdAction($id, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $ad = $em->getRepository('AppBundle:Anunt')->find($id);
+        if (!$ad) {
+            throw $this->createNotFoundException(
+                'No ad found for id ' . $id
+            );
+        }
+        if ($ad->getUser() != $this->getUser()) {
+            throw $this->createNotFoundException(
+                'You don\'t have rights to delete this ad!'
+            );
+        }
+
+        $em->remove($ad);
+        $em->flush();
+
+        return $this->redirectToRoute('homepage');
+    }
+
+    /**
+     * @Route("/view/{id}",name="view_ad")
+     * @Template
+     */
+    public function viewAdAction($id, Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $ad = $em->getRepository('AppBundle:Anunt')->find($id);
+        if (!$ad) {
+            throw $this->createNotFoundException(
+                'No ad found for id ' . $id
+            );
+        }
+
+        return $this->render('@App/Anunt/viewAd.html.twig', array(
+                'ad' => $ad)
         );
     }
 }

@@ -2,21 +2,16 @@
 {% block body %}
     <h3>Anunturi:</h3>
     <br>
-    {% if app.user %}
-        <a href="{{ path('new-ad') }}">New</a>
-    {% endif %}
-    <div>
-        <form action="" method="GET">
-            <input type="text" name="search"/>
-            <button type="submit">Cauta</button>
-        </form>
-    </div>
+    <a href="{{ path('new-ad') }}">New</a>
     {% for ad in ads %}
         <a href="{{ path('view_ad', {'id': ad.id}) }}">{{ ad.title }}</a>
         -
         {{ ad.price }}
         -
         {{ ad.CreatedAt|date('Y-m-d H:i') }}
+
+        <a href="{{ path('edit_article', {id: ad.id}) }}">Edit</a>
+        <a href="{{ path('delete_anunt', {id: ad.id}) }}">Delete</a>
 
         <br>
     {% endfor %}

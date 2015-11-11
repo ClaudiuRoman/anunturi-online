@@ -15,12 +15,13 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $manager=$this->getDoctrine()->getManager();
-        $query=$manager->getRepository('AppBundle:Anunt')->findBy([],['createdAt'=>'DESC']);
+        $repository=$this->getDoctrine()->getRepository('AppBundle:Anunt');
+
+        $results = $repository->findAnunturi($request->get('search'));
 
         $paginator  = $this->get('knp_paginator');
         $ads = $paginator->paginate(
-            $query,
+            $results,
             $request->query->getInt('page', 1),
             10/*limit per page*/
         );
