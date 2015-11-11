@@ -12,6 +12,7 @@
                 <option value="default">Default</option>
                 <option value="price-asc">Price ASC</option>
                 <option value="price-desc">Price DESC</option>
+                <option value="created-asc">Created ASC</option>
            </select>
             <button type="submit">Filter</button>
         </form>
@@ -22,7 +23,7 @@
         -
         {{ ad.price }}
         -
-        {{ ad.CreatedAt|date('Y-m-d H:i') }}
+        {{ ad.CreatedAt|date('Y-m-d') }}
 
         <br>
     {% endfor %}

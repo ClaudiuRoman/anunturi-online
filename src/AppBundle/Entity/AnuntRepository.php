@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 
 class AnuntRepository extends EntityRepository
 {
-    public function findAnunturi($search = null,$sortType=null)
+    public function findAnunturi($search = null, $sortType = null)
     {
         $qb = $this->createQueryBuilder('a');
 
@@ -22,16 +22,18 @@ class AnuntRepository extends EntityRepository
             $qb->setParameter('search', '%' . $search . '%');
         }
 
-        if($sortType=="price-asc")
-        {
-            $qb->orderBy('a.price','ASC');
-        }
-        else if($sortType=="price-desc")
-        {
-            $qb->orderBy('a.price','DESC');
-        }
-        else {
-            $qb->orderBy('a.createdAt', 'DESC');
+        switch ($sortType) {
+            case "price-asc":
+                $qb->orderBy('a.price', 'ASC');
+                break;
+            case "price-desc":
+                $qb->orderBy('a.price', 'DESC');
+                break;
+            case "created-asc":
+                $qb->orderBy('a.createdAt', 'ASC');
+                break;
+            default:
+                $qb->orderBy('a.createdAt', 'DESC');
         }
         return $qb->getQuery()->getResult();
     }
